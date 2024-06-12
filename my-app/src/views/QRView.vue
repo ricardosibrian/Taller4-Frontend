@@ -1,16 +1,57 @@
 <template>
-  <div class="main-qr">
-    <h1>QR Actual</h1>   
-    <CardQR></CardQR>
+  <div class="house-detail">
+    <MyCitasTable 
+      :members="members" 
+      @remove-member="handleRemoveMember" 
+      @show-add-member-modal="showAddMemberModal" 
+    />
+    <SolicitarCitaModal 
+      :visible="isAddMemberModalVisible" 
+      @close="hideAddMemberModal" 
+      @add-member="handleAddMember" 
+    />
   </div>
 </template>
 
 <script>
-import CardQR from '@/components/CardQR.vue';
+import HomeInfoCard from '../components/CardHome.vue';
+import MyCitasTable from '../components/MyCitasTable.vue';
+import SolicitarCitaModal from '@/components/SolicitarCitaModal.vue';
+
 export default {
-  name: 'QRView',
-  components:{
-    CardQR
+  name: 'AdminHouseDetailView',
+  components: {
+    HomeInfoCard,
+    MyCitasTable,
+    SolicitarCitaModal
+  },
+  data() {
+    return {
+      homeEmail: 'john.doe@gmail.com',
+      members: [
+        { name: 'John Doe', email: 'john.doe@gmail.com', role: 'Administrador' },
+        { name: 'Ricardo López', email: 'ricardo.lopez@gmail.com', role: 'Normal' },
+        { name: 'Fernando Eguizábal', email: 'fernando.eguizabal@gmail.com', role: 'Normal' },
+        { name: 'Ricardo Sibirián', email: 'fernando.eguizabal@gmail.com', role: 'Normal' },
+        { name: 'Billy Valencia', email: 'fernando.eguizabal@gmail.com', role: 'Normal' }
+      ],
+      isAddMemberModalVisible: false
+    };
+  },
+  methods: {
+    handleRemoveMember(index) {
+      this.members.splice(index, 1);
+    },
+    showAddMemberModal() {
+      this.isAddMemberModalVisible = true;
+    },
+    hideAddMemberModal() {
+      this.isAddMemberModalVisible = false;
+    },
+    handleAddMember(email) {
+      const newMember = { name: 'Nuevo Miembro', email: email, role: 'Normal' };
+      this.members.push(newMember);
+    }
   }
 }
 </script>
@@ -18,20 +59,7 @@ export default {
 <style scoped>
 @import url('../styles.css');
 
-.main-qr{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0 20px 0;
-  gap: 12px;
+.house-detail {
+  padding: 20px;
 }
-
-.main-qr h1{
-  color:var(--title-color);
-  font-family: var(--primary-font);
-  font-size: var(--title-size);
-}
-
-
-
 </style>

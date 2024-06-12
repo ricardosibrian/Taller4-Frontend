@@ -1,16 +1,30 @@
 <template>
   <div class="landing">
-    <div class="title">
-      <img src="../assets/logo.png" alt="google-icon">
-      <p>Acceso sin demoras, seguridad sin preocupaciones</p>
-      <button @click="scrollToBenefits">Conoce más</button>
-    </div>
     <div class="card">
       <h4>Inicia sesión</h4>
-      <p>Regístrate e inicia sesión con tu cuenta de Google</p>
-      <router-link to="/mainView">
-        <img class="google" src="../assets/google.png" alt="google-icon">
+      <form @submit.prevent="confirmAddMember">
+        <label for="detalle">Username or email:</label>
+        <input type="text" v-model="newMemberEmail" id="detalle" required />
+        <label for="detalle">Contraseña:</label>
+        <input type="text" v-model="newMemberEmail" id="detalle" required />
+        <router-link to="/mainView">
+        <button type="submit">Ingresar</button>
       </router-link>
+      </form>
+    </div>
+    <div class="card2">
+      <h4>Registrarse</h4>
+      <form @submit.prevent="confirmAddMember">
+        <label for="detalle">Ingrese su email:</label>
+        <input type="text" v-model="newMemberEmail" id="detalle" required />
+        <label for="detalle">Ingrese un username:</label>
+        <input type="text" v-model="newMemberEmail" id="detalle" required />
+        <label for="detalle">Ingresa una contraseña:</label>
+        <input type="text" v-model="newMemberEmail" id="detalle" required />
+        <router-link to="/mainView">
+        <button type="submit">Registrarme</button>
+      </router-link>
+      </form>
     </div>
   </div>
   <div class="info" id="beneficios">
@@ -121,15 +135,29 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background-color: white;
+  border-radius: 20px;
 }
 
-.card h4{
+.card2{
+  border-radius: 20px;
+  width: 350px;
+  height: 390px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  border-radius: 20px;
+}
+
+.card h4, .card2 h4{
   font-family: var(--primary-font);
   font-size: 25px;
   color: var(--title-color);
 }
 
-.card p{
+.card p, .card2 p{
   font-family: var(--primary-font);
   font-size: 20px;
   color: var(--title-color);
@@ -187,6 +215,62 @@ footer{
   align-items: center;
   text-align: start;
   padding-left: 40px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--title-color);
+  font-family: var(--primary-font);
+  text-align: left;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  color: var(--title-color);
+  font-size: 14px;
+  font-family: var(--primary-font);
+  border-color: var(--title-color);
+}
+
+input:focus {
+  outline-color: var(--primary-color);
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="button"] {
+  background-color: var(--bg-color);
+  color: var(--title-color);
+  font-size: 14px;
+  font-family: var(--primary-font);
+  font-weight: 600;
+}
+
+button[type="button"]:hover {
+  background-color: #E0E1E5;  
+}
+
+button[type="submit"] {
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 14px;
+  font-family: var(--primary-font);
+  font-weight: 600;
+}
+
+button[type="submit"]:hover {
+  background-color: #1d3a94;
 }
 
 @media screen and (min-width: 769px) and (max-width: 1095px) {
