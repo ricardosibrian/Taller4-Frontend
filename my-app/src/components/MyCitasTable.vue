@@ -12,7 +12,7 @@
         <tr>
           <th>Nombre</th>
           <th>Correo electrónico</th>
-          <th>Rol</th>
+          <th>Razon</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -21,7 +21,7 @@
           <td>{{ member.name }}</td>
           <td>{{ member.email }}</td>
           <td>{{ member.role }}</td>
-          <td><button class="delete-button" @click="removeMember(index)">Eliminar</button></td>
+          <td><button class="delete-button" @click="removeMember(index)">Cancelar</button></td>
         </tr>
       </tbody>
     </table>

@@ -1,34 +1,44 @@
 <template>
   <div class="main-admin-house">
     <div class="main-card">
-    <h2>Solicitudes de citas</h2>
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Nº de casa</th>
-            <th>Encargado</th>
-            <th>Habitantes</th>
-            <th>Detalle</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="house in houses" :key="house.id">
-            <td>{{ house.numeroCasa }}</td>
-            <td>{{ house.encargado }}</td>
-            <td>{{ house.habitantes }}</td>
-            <td><router-link to="/mainView/adminHouseDetailView" class="admin-home"><button>Administrar</button></router-link></td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>Solicitudes de citas</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nº de casa</th>
+              <th>Encargado</th>
+              <th>Habitantes</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="house in houses" :key="house.id">
+              <td>{{ house.numeroCasa }}</td>
+              <td>{{ house.encargado }}</td>
+              <td>{{ house.habitantes }}</td>
+              <td>
+                <button @click="openModal()" class="admin-home">Administrar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+
+    <!-- Modal del componente AddMemberModal -->
+    <AddMemberModal :visible="modalVisible" @close="modalVisible = false" @add-member="handleAddMember" />
   </div>
 </template>
 
 <script>
+import AddMemberModal from '../components/NewAppointmentModal.vue';
+
 export default {
   name: 'AdminHouseView',
+  components: {
+    AddMemberModal,
+  },
   data() {
     return {
       houses: [
@@ -42,24 +52,28 @@ export default {
         { id: 8, numeroCasa: 8, encargado: 'Carlos García', habitantes: 4 },
         { id: 9, numeroCasa: 9, encargado: 'Carlos García', habitantes: 3 },
         { id: 10, numeroCasa: 10, encargado: 'Carlos García', habitantes: 2 },
-      ]
+      ],
+      modalVisible: false,
     };
   },
   methods: {
-    administrar(id) {
-      console.log(`Administrar casa con id: ${id}`);
-    }
-  }
-}
+    openModal() {
+      this.modalVisible = true;
+    },
+    handleAddMember() {
+      this.modalVisible = false; // Cierra el modal después de agregar el miembro
+    },
+  },
+};
 </script>
 
 <style scoped>
 @import url('../styles.css');
 
-.main-admin-house{
+.main-admin-house {
   padding: 20px;
 }
-.main-card{
+.main-card {
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
@@ -71,7 +85,7 @@ export default {
   overflow-x: auto;
 }
 
-h2{
+h2 {
   color: var(--title-color);
   font-size: 18px;
   font-family: var(--primary-font);
@@ -87,12 +101,13 @@ thead {
   background-color: #f4f4f4;
 }
 
-.table-container{
+.table-container {
   width: 100%;
   border-collapse: collapse;
   color: var(--title-color);
   font-family: var(--primary-font);
 }
+
 .table-container th,
 .table-container td {
   padding: 15px;
@@ -119,6 +134,7 @@ thead {
 }
 
 .admin-home:hover {
-  background-color: #E0E1E5;  
+  background-color: #e0e1e5;
 }
 </style>
+
