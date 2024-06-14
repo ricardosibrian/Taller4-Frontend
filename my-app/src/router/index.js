@@ -15,6 +15,8 @@ import VigilantView from '@/views/VigilantView.vue'
 import ScanQRView from '@/views/ScanQRView.vue'
 import CreateEntryView from '@/views/CreateEntryView.vue'
 import VisitantePermissionView from '/src/views/VisitantePermissionView.vue'
+import AppointmentsView from '../views/AppointmentsView.vue'
+import RequestAppointmentView from '@/views/RequestAppointmentView.vue'
 
 const routes = [
   { path: '/', component: LoginView },
@@ -32,7 +34,9 @@ const routes = [
       { path: 'adminScanerView', component: AdminScanerView },
       { path: 'adminVigilantView', component: AdminVigilantView },
       { path: 'adminHouseDetailView', component: AdminHouseDetailView },
-      { path: 'visitantePermissionView', component: VisitantePermissionView }
+      { path: 'visitantePermissionView', component: VisitantePermissionView },
+      { path: 'appointmentsView', component: AppointmentsView},
+      { path: 'requestAppointmentView', component: RequestAppointmentView}
     ]
   },
   { 

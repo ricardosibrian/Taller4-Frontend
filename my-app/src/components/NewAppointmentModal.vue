@@ -4,8 +4,8 @@
       <button class="close-button" @click="closeModal">✕</button>
       <h3>Crear una nueva cita</h3>
       <form class="form-appointment" @submit.prevent="confirmAddAppointment">
-        <label for="email">Correo electrónico:</label>
-        <input type="email" v-model="patientEmail" id="email" required />
+        <label for="email">Tiempo estimado:</label>
+        <input type="text" v-model="patientEmail" id="email" required />
 
         <div class="form-group">
           <label for="appointmentDateTime">Fecha y hora de cita:</label>

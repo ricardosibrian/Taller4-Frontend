@@ -2,13 +2,13 @@
 <aside class="sidebar">
   <div class="main-info">
     <div class="links">
-      <router-link to="/mainView">
-      <div class="item-container qr-icon" :class="{ 'active-hover': $route.path === '/mainView' }" >
+      <router-link to="/mainView/appointmentsView">
+      <div class="item-container qr-icon" :class="{ 'active-hover': $route.path === '/mainView/appointmentsView' }" >
         <p class="item-link">Citas</p>
       </div>
       </router-link>
-      <router-link to="/mainView/myHomeView">
-      <div class="item-container home-icon" :class="{ 'active-hover': $route.path === '/mainView/myHomeView' }">
+      <router-link to="/mainView/requestAppointmentView">
+      <div class="item-container home-icon" :class="{ 'active-hover': $route.path === '/mainView/requestAppointmentView' }">
         <p class="item-link">Solicitudes</p>
       </div>
       </router-link>

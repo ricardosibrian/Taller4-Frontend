@@ -2,29 +2,31 @@
   <div class="table-container">
     <div class="table-header">
       <h3>Mis citas</h3>
-      <button class="add-button" @click="addMember">
-         Solicitar cita
+      <button class="add-button" @click="$emit('show-add-appointment-modal')">
+        Solicitar cita
       </button>
     </div>
     <div class="table-wrapper">
       <table class="table">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Correo electrónico</th>
-          <th>Razon</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(member, index) in members" :key="index">
-          <td>{{ member.name }}</td>
-          <td>{{ member.email }}</td>
-          <td>{{ member.role }}</td>
-          <td><button class="delete-button" @click="removeMember(index)">Cancelar</button></td>
-        </tr>
-      </tbody>
-    </table>
+        <thead>
+          <tr>
+            <th>Fecha de solicitud</th>
+            <th>Estado</th>
+            <th>Razón</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(appointment, index) in appointments" :key="index">
+            <td>{{ appointment.requestDate }}</td>
+            <td>{{ appointment.status }}</td>
+            <td>{{ appointment.reason }}</td>
+            <td>
+              <button class="delete-button" @click="$emit('cancel-appointment', index)">Cancelar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -33,17 +35,9 @@
 export default {
   name: 'MyCitasTable',
   props: {
-    members: {
+    appointments: {
       type: Array,
       required: true
-    }
-  },
-  methods: {
-    removeMember(index) {
-      this.$emit('remove-member', index);
-    },
-    addMember() {
-      this.$emit('show-add-member-modal');
     }
   }
 }
@@ -85,10 +79,6 @@ export default {
   align-items: center;
 }
 
-.add-button img {
-  margin-right: 5px;
-}
-
 .add-button:hover {
   background-color: #1d3a94;
 }
@@ -100,11 +90,11 @@ export default {
   font-family: var(--primary-font);
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
-  
 }
 
 .table th {
@@ -117,7 +107,7 @@ export default {
   font-size: 13px;
 }
 
-.table-header h3{
+.table-header h3 {
   color: var(--title-color);
   font-size: 18px;
   font-family: var(--primary-font);
@@ -133,9 +123,13 @@ export default {
 }
 
 .delete-button:hover {
-  background-color: #E0E1E5;  
+  background-color: #e0e1e5;
 }
 </style>
+
+
+
+
 
 
 

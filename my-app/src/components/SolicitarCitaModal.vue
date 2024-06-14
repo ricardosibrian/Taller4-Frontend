@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: 'AddMemberModal',
+  name: 'SolicitarCitaModal',
   props: {
     visible: {
       type: Boolean,

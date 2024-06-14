@@ -1,0 +1,149 @@
+<template>
+  <div class="main-admin-house">
+    <div class="main-card">
+      <h2>Solicitudes de citas</h2>
+      <MyCitasTable 
+        :appointments="appointments" 
+        @show-add-appointment-modal="showModal"
+        @cancel-appointment="handleCancelAppointment"
+      />
+    </div>
+    <SolicitarCitaModal 
+      :visible="isModalVisible" 
+      @close="hideModal" 
+      @add-member="handleAddAppointment" 
+    />
+  </div>
+</template>
+
+<script>
+import MyCitasTable from '../components/MyCitasTable.vue';
+import SolicitarCitaModal from '../components/SolicitarCitaModal.vue';
+
+export default {
+  components: {
+    MyCitasTable,
+    SolicitarCitaModal
+  },
+  data() {
+    return {
+      appointments: [
+        {
+          name: 'Juan Pérez',
+          requestDate: '2024-06-01',
+          status: 'Pendiente',
+          reason: 'Chequeo general'
+        },
+        {
+          name: 'María González',
+          requestDate: '2024-06-05',
+          status: 'Confirmada',
+          reason: 'Consulta dermatológica'
+        },
+        {
+          name: 'Carlos López',
+          requestDate: '2024-06-10',
+          status: 'Cancelada',
+          reason: 'Consulta cardiológica'
+        }
+      ],
+      isModalVisible: false
+    };
+  },
+  methods: {
+    showModal() {
+      this.isModalVisible = true;
+    },
+    hideModal() {
+      this.isModalVisible = false;
+    },
+    handleAddAppointment(newMemberEmail) {
+      const newAppointment = {
+        name: 'Nuevo Paciente',
+        requestDate: new Date().toISOString().split('T')[0],
+        status: 'Pendiente',
+        reason: newMemberEmail
+      };
+      this.appointments.push(newAppointment);
+      this.hideModal();
+    },
+    handleCancelAppointment(index) {
+      this.appointments.splice(index, 1);
+    }
+  }
+}
+</script>
+
+<style scoped>
+@import url('../styles.css');
+
+.main-admin-house {
+  padding: 20px;
+}
+
+.main-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+h2 {
+  color: var(--title-color);
+  font-size: 18px;
+  font-family: var(--primary-font);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+  background-color: #f4f4f4;
+}
+
+.table-container {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--title-color);
+  font-family: var(--primary-font);
+}
+
+.table-container th,
+.table-container td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table-container th {
+  background-color: #f9f9f9;
+  font-size: 14px;
+}
+
+.table-container td {
+  font-size: 13px;
+}
+
+.admin-home {
+  background-color: var(--bg-color);
+  color: var(--title-color);
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-home:hover {
+  background-color: #e0e1e5;
+}
+</style>
+
+  
