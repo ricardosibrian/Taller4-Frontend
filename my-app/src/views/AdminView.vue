@@ -1,55 +1,131 @@
 <template>
-  <div class="main-admin">
-      <router-link to="/mainView/adminHouseView" class="card-link"><CardAdmin :src="house" msg="Administrar hogares"></CardAdmin></router-link>
-      <router-link to="/mainView/adminVigilantView" class="card-link"><CardAdmin :src="vigilant" msg="Administrar vigilantes"></CardAdmin></router-link>
-      <router-link to="/mainView/adminScanerView" class="card-link"><CardAdmin :src="scaner" msg="Administrar escáneres"></CardAdmin></router-link>
+  <div class="main-admin-roles">
+    <div class="main-card">
+      <h2>Administrar Roles</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users" :key="user.id">
+              <td>{{ user.nombre }}</td>
+              <td>
+                <select v-model="user.rol">
+                  <option v-for="rol in roles" :key="rol" :value="rol">{{ rol }}</option>
+                </select>
+              </td>
+              <td>
+                <button @click="updateRole(user)" class="update-role">Actualizar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import CardAdmin from '@/components/CardAdmin.vue';
 export default {
-  name: 'AdminView',
-  components:{
-    CardAdmin
-  },
+  name: 'AdminRolesView',
   data() {
     return {
-      house: require('../assets/home.png'), 
-      vigilant: require('../assets/vigilant.png'),
-      scaner: require('../assets/scaner.png'),
+      users: [
+        { id: 1, nombre: 'Juan Pérez', rol: 'Admin' },
+        { id: 2, nombre: 'María López', rol: 'Usuario' },
+        { id: 3, nombre: 'Carlos Martínez', rol: 'Moderador' },
+      ],
+      roles: ['Admin', 'Usuario', 'Moderador'],
     };
   },
-}
+  methods: {
+    updateRole(user) {
+      // Lógica para actualizar el rol del usuario
+      console.log(`Rol de ${user.nombre} actualizado a ${user.rol}`);
+    },
+  },
+};
 </script>
 
 <style scoped>
+@import url('../styles.css');
 
-  .grCard{
-    margin-top: 0;
+.main-admin-roles {
+  padding: 20px;
+}
+.main-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
 
-  }
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
 
-  .main-admin{
-    text-align: center;
-    margin-top: 30px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    align-items: start;
-    gap: 10px;
-    padding: 20px;
-  }
+h2 {
+  color: var(--title-color);
+  font-size: 18px;
+  font-family: var(--primary-font);
+}
 
-  .card-link {
-  cursor: pointer; 
-  transition: transform 0.3s; 
-  text-decoration: none;
-  }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
 
-  .card-link:hover {
-    transform: scale(1.02); 
-  }
+thead {
+  background-color: #f4f4f4;
+}
 
+.table-container {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--title-color);
+  font-family: var(--primary-font);
+}
+
+.table-container th,
+.table-container td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table-container th {
+  background-color: #f9f9f9;
+  font-size: 14px;
+}
+
+.table-container td {
+  font-size: 13px;
+}
+
+.update-role {
+  background-color: var(--bg-color);
+  color: var(--title-color);
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.update-role:hover {
+  background-color: #e0e1e5;
+}
+
+select {
+  padding: 5px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
 </style>
+

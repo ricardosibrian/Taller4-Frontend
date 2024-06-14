@@ -18,7 +18,8 @@
               <td>{{ solicitud.email }}</td>
               <td>{{ solicitud.razon }}</td>
               <td>
-                <button @click="openModal()" class="admin-home">Administrar</button>
+                <span @click="openModal()" class="icon-action">✔️</span>
+                <span @click="rejectSolicitud(solicitud.id)" class="icon-action">❌</span>
               </td>
             </tr>
           </tbody>
@@ -53,8 +54,11 @@ export default {
     openModal() {
       this.modalVisible = true;
     },
+    rejectSolicitud(id) {
+      this.solicitudes = this.solicitudes.filter(solicitud => solicitud.id !== id);
+    },
     handleAddMember() {
-      this.modalVisible = false; 
+      this.modalVisible = false;
     },
   },
 };
@@ -117,16 +121,23 @@ thead {
   font-size: 13px;
 }
 
-.admin-home {
-  background-color: var(--bg-color);
-  color: var(--title-color);
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
+.icon-action {
+  font-size: 20px;
   cursor: pointer;
+  margin-right: 10px;
 }
 
-.admin-home:hover {
-  background-color: #e0e1e5;
+.icon-action:hover {
+  color: #007BFF;
+}
+
+.icon-action:nth-child(1) {
+  color: green;
+}
+
+.icon-action:nth-child(2) {
+  color: red;
 }
 </style>
+
+
