@@ -1,20 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import QRView from '/src/views/QRView.vue'
-import MyHomeView from '/src/views/MyHomeView.vue'
-import EntryView from '/src/views/EntryView.vue'
-import PermissionView from '/src/views/PermissionView.vue'
+import AtentionView from '/src/views/AtentionView.vue'
+import RecordView from '/src/views/RecordView.vue'
 import AdminView from '/src/views/AdminView.vue'
-import GraphView from '/src/views/GraphView.vue'
-import AdminHouseView from '/src/views/AdminHouseView.vue'
-import AdminScanerView from '/src/views/AdminScanerView.vue'
-import AdminVigilantView from '/src/views/AdminVigilantView.vue'
+import PostRecordView from '/src/views/PostRecordView.vue'
 import LoginView from '/src/views/LoginView.vue'
 import MainView from '/src/views/MainView.vue'
-import AdminHouseDetailView from '@/views/AdminHouseDetailView.vue'
-import VigilantView from '@/views/VigilantView.vue'
-import ScanQRView from '@/views/ScanQRView.vue'
-import CreateEntryView from '@/views/CreateEntryView.vue'
-import VisitantePermissionView from '/src/views/VisitantePermissionView.vue'
 import AppointmentsView from '../views/AppointmentsView.vue'
 import RequestAppointmentView from '@/views/RequestAppointmentView.vue'
 
@@ -25,25 +15,11 @@ const routes = [
     component: MainView,
     children: [
       { path: '', component: AppointmentsView },
-      { path: 'myHomeView', component: MyHomeView },
-      { path: 'entryView', component: EntryView },
-      { path: 'permissionView', component: PermissionView },
+      { path: 'atentionView', component: AtentionView },
+      { path: 'recordView', component: RecordView },
       { path: 'adminView', component: AdminView },
-      { path: 'graphView', component: GraphView },
-      { path: 'adminHouseView', component: AdminHouseView },
-      { path: 'adminScanerView', component: AdminScanerView },
-      { path: 'adminVigilantView', component: AdminVigilantView },
-      { path: 'adminHouseDetailView', component: AdminHouseDetailView },
-      { path: 'visitantePermissionView', component: VisitantePermissionView },
+      { path: 'postRecordView', component: PostRecordView },
       { path: 'requestAppointmentView', component: RequestAppointmentView}
-    ]
-  },
-  { 
-    path: '/vigilantView', 
-    component: VigilantView,
-    children: [
-      { path: '', component: ScanQRView },
-      { path: 'createEntryView', component: CreateEntryView },
     ]
   }
 

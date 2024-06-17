@@ -1,16 +1,16 @@
 <template>
   <div class="main-permission">
-    <PermissionsTable></PermissionsTable>
+    <AtentionTable></AtentionTable>
   </div>
 </template>
 
 <script>
-import PermissionsTable from '@/components/PermissionsTable.vue';
+import AtentionTable from '@/components/AtentionTable.vue';
 
 export default {
-  name: 'PermissionView',
+  name: 'AtentionView',
   components:{
-    PermissionsTable
+    AtentionTable
   }
 }
 </script>
@@ -22,3 +22,4 @@ export default {
   padding: 20px;
 }
 </style>
+

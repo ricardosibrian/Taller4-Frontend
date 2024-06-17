@@ -51,14 +51,14 @@ export default {
             'Content-Type': 'application/json'
           }
         });
-        console.log(response); // Imprime la respuesta para depuración
+        console.log(response); 
         if (response.data && response.data.data && response.data.data.token) {
           const token = response.data.data.token;
           localStorage.setItem('token', token);
           this.showToast('Login successful', 'success');
           this.resetLoginFields();
-          this.fetchUserInfo(); // Obtener información del usuario después del login
-          this.$router.push('/mainView'); // Navega a mainView después del login
+          this.fetchUserInfo(); 
+          this.$router.push('/mainView'); 
         } else {
           this.showToast('Unexpected response structure', 'error');
         }
@@ -70,14 +70,14 @@ export default {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          return; // Si no hay token almacenado, no hace la solicitud
+          return; 
         }
         const response = await axios.get('http://localhost:8080/api/user/whoami', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        console.log('User Info:', response.data); // Imprime la información del usuario en la consola
+        console.log('User Info:', response.data); 
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
@@ -89,7 +89,7 @@ export default {
             'Content-Type': 'application/json'
           }
         });
-        console.log(response); // Imprime la respuesta para depuración
+        console.log(response);
         if (response.data && response.data.message) {
           this.showToast('Registration successful', 'success');
           this.resetRegisterFields();
@@ -110,11 +110,10 @@ export default {
       this.registerData.password = '';
     },
     showToast(message, type) {
-      // Implementa tu lógica de toast aquí
       alert(`${type.toUpperCase()}: ${message}`);
     },
     handleError(error) {
-      console.error('API Error:', error); // Imprime el error para depuración
+      console.error('API Error:', error); 
       if (error.response && error.response.data && error.response.data.message) {
         this.showToast(error.response.data.message, 'error');
       } else {
@@ -133,7 +132,7 @@ export default {
 @import url('../styles.css');
 
 .landing{
-  background-image: url('../assets/background-img.png');
+  background-image: url('../assets/doctor.png');
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
@@ -192,6 +191,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
 }
 
@@ -200,6 +200,7 @@ export default {
   width: 350px;
   height: 390px;
   padding: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: center;

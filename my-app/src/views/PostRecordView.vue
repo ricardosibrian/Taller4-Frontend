@@ -1,46 +1,22 @@
 <template>
   <div class="main-admin-vigilant">
     <div class="add-vigilant">
-      <h2>Registrar una entrada no asociada</h2>
-      <form @submit.prevent="addVigilant">
-        <label for="text">¿Quién entra?</label>
-        <input type="text" id="entrada" v-model="newVigilantEmail" placeholder="Camión de aseo, policía, delivery..." required />
-        <label for="text">Motivo de la entrada</label>
-        <input type="text" id="motivo" v-model="newVigilantEmail" placeholder="Motivo de entrada" required />
-        <button type="submit">Registrar entrada</button>
+      <h2>Agregar registro al historial médico del paciente</h2>
+      <form @submit.prevent="addRecord">
+        <label for="text">Correo eléctrónico del paciente</label>
+        <input type="text" id="motivo" v-model="newVigilantEmail" placeholder="Ingresar el correo electrónico del paciente" required />
+        <label for="text">Control médico</label>
+        <input type="text" id="motivo" v-model="newVigilantEmail" placeholder="Ingresar motivo de entrada" required />
+        <button type="submit">Agregar al historial</button>
       </form>
     </div>
   </div>
 </template>
 
 <script>
-import CardAdmin from '../components/CardVigilante.vue';
-import vigilantImage from '../assets/vigilant.png';
 
 export default {
-  name: 'CreateEntryView',
-  components: {
-    CardAdmin
-  },
-  data() {
-    return {
-      newVigilantEmail: '',
-      vigilants: [
-        { name: 'Carlos García', email: 'carlosgarcia@mail.com', src: vigilantImage },
-      ]
-    };
-  },
-  methods: {
-    addVigilant() {
-      if (this.newVigilantEmail) {
-        this.vigilants.push({ name: 'Nuevo Vigilante', email: this.newVigilantEmail, src: vigilantImage });
-        this.newVigilantEmail = '';
-      }
-    },
-    removeVigilant(email) {
-      this.vigilants = this.vigilants.filter(v => v.email !== email);
-    }
-  }
+  name: 'CreateEntryView'
 };
 </script>
 
@@ -126,4 +102,3 @@ input:focus {
 }
 
 </style>
-

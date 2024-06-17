@@ -3,7 +3,7 @@
   <div class="main-info">
     <div class="links">
       <router-link to="/mainView">
-      <div class="item-container qr-icon" :class="{ 'active-hover': $route.path === '/mainView' }" >
+      <div class="item-container qr-icon" :class="{ 'active-hover': $route.path === '/mainView' || $route.path === '/mainView/'}" >
         <p class="item-link">Citas</p>
       </div>
       </router-link>
@@ -12,24 +12,24 @@
         <p class="item-link">Solicitudes</p>
       </div>
       </router-link>
-      <router-link to="/mainView/entryView">
-      <div class="item-container entry-icon" :class="{ 'active-hover': $route.path === '/mainView/entryView' }">
+      <router-link to="/mainView/atentionView">
+      <div class="item-container entry-icon" :class="{ 'active-hover': $route.path === '/mainView/atentionView' }">
         <p class="item-link">Atención</p>
       </div>
       </router-link>
-      <router-link to="/mainView/permissionView">
-      <div class="item-container permission-icon" :class="{ 'active-hover': $route.path === '/mainView/permissionView' }">
-        <p class="item-link">Permisos</p>
+      <router-link to="/mainView/recordView">
+      <div class="item-container permission-icon" :class="{ 'active-hover': $route.path === '/mainView/recordView' }">
+        <p class="item-link">Historial</p>
+      </div>
+      </router-link>
+      <router-link to="/mainView/postRecordView">
+      <div class="item-container graph-icon" :class="{ 'active-hover': $route.path === '/mainView/postRecordView' }">
+        <p class="item-link" to="/about">Nuevo historial</p>
       </div>
       </router-link>
       <router-link to="/mainView/adminView">
         <div class="item-container admin-icon" :class="{ 'active-hover': $route.path === '/mainView/adminView' || $route.path === '/mainView/adminHouseView' || $route.path === '/mainView/adminScanerView' || $route.path === '/mainView/adminVigilantView' || $route.path === '/mainView/adminHouseDetailView' }">
         <p class="item-link" >Administrar</p>
-      </div>
-      </router-link>
-      <router-link to="/mainView/graphView">
-      <div class="item-container graph-icon" :class="{ 'active-hover': $route.path === '/mainView/graphView' }">
-        <p class="item-link" to="/about">Gráficos</p>
       </div>
       </router-link>
     </div>
