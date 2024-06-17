@@ -24,7 +24,7 @@ const routes = [
     path: '/mainView', 
     component: MainView,
     children: [
-      { path: '', component: QRView },
+      { path: '', component: AppointmentsView },
       { path: 'myHomeView', component: MyHomeView },
       { path: 'entryView', component: EntryView },
       { path: 'permissionView', component: PermissionView },
@@ -35,7 +35,6 @@ const routes = [
       { path: 'adminVigilantView', component: AdminVigilantView },
       { path: 'adminHouseDetailView', component: AdminHouseDetailView },
       { path: 'visitantePermissionView', component: VisitantePermissionView },
-      { path: 'appointmentsView', component: AppointmentsView},
       { path: 'requestAppointmentView', component: RequestAppointmentView}
     ]
   },

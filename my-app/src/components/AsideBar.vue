@@ -2,8 +2,8 @@
 <aside class="sidebar">
   <div class="main-info">
     <div class="links">
-      <router-link to="/mainView/appointmentsView">
-      <div class="item-container qr-icon" :class="{ 'active-hover': $route.path === '/mainView/appointmentsView' }" >
+      <router-link to="/mainView">
+      <div class="item-container qr-icon" :class="{ 'active-hover': $route.path === '/mainView' }" >
         <p class="item-link">Citas</p>
       </div>
       </router-link>

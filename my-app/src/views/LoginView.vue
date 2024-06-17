@@ -2,76 +2,132 @@
   <div class="landing">
     <div class="card">
       <h4>Inicia sesión</h4>
-      <form @submit.prevent="confirmAddMember">
-        <label for="detalle">Username or email:</label>
-        <input type="text" v-model="newMemberEmail" id="detalle" required />
-        <label for="detalle">Contraseña:</label>
-        <input type="text" v-model="newMemberEmail" id="detalle" required />
-        <router-link to="/mainView">
+      <form @submit.prevent="login">
+        <label for="email-login">Email:</label>
+        <input type="text" v-model="loginData.identifier" id="email-login" required />
+        <label for="password-login">Contraseña:</label>
+        <input type="password" v-model="loginData.password" id="password-login" required />
         <button type="submit">Ingresar</button>
-      </router-link>
       </form>
     </div>
     <div class="card2">
       <h4>Registrarse</h4>
-      <form @submit.prevent="confirmAddMember">
-        <label for="detalle">Ingrese su email:</label>
-        <input type="text" v-model="newMemberEmail" id="detalle" required />
-        <label for="detalle">Ingrese un username:</label>
-        <input type="text" v-model="newMemberEmail" id="detalle" required />
-        <label for="detalle">Ingresa una contraseña:</label>
-        <input type="text" v-model="newMemberEmail" id="detalle" required />
-        <router-link to="/mainView">
+      <form @submit.prevent="register">
+        <label for="email-register">Ingrese su email:</label>
+        <input type="text" v-model="registerData.email" id="email-register" required />
+        <label for="username-register">Ingrese un username:</label>
+        <input type="text" v-model="registerData.username" id="username-register" required />
+        <label for="password-register">Ingresa una contraseña:</label>
+        <input type="password" v-model="registerData.password" id="password-register" required />
         <button type="submit">Registrarme</button>
-      </router-link>
       </form>
     </div>
   </div>
-  <div class="info" id="beneficios">
-      <h4>Conoce nuestros beneficios...</h4>
-      <div class="benefits">
-        <div class="cards">
-          <h5>Acceso mediante QR</h5>
-          <img src="../assets/benefit_1.png" alt="google-icon">
-          <p>Accede fácilmente escaneando un código QR único.</p>
-        </div>
-        <div class="cards">
-          <h5>Solicitud de Permisos</h5>
-          <img src="../assets/benefit_2.png" alt="google-icon">
-          <p>Solicita permisos de entrada con solo unos toques.</p>
-        </div>
-        <div class="cards">
-          <h5>Gestión Centralizada</h5>
-          <img src="../assets/benefit_3.png" alt="google-icon">
-          <p>Administra y monitorea todos los accesos a tu hogar desde una sola plataforma.</p>
-        </div>
-      </div>
-    </div>
-    <footer>
-      QRGuard
-    </footer>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'LoginView',
+  data() {
+    return {
+      loginData: {
+        identifier: '',
+        password: ''
+      },
+      registerData: {
+        username: '',
+        email: '',
+        password: ''
+      }
+    };
+  },
   methods: {
-    scrollToBenefits() {
-      // Obtén la posición de la sección de beneficios
-      const benefitsSection = document.getElementById('beneficios');
-      if (benefitsSection) {
-        const benefitsPosition = benefitsSection.offsetTop;
-
-        // Realiza un desplazamiento suave hasta la posición de la sección de beneficios
-        window.scrollTo({
-          top: benefitsPosition,
-          behavior: 'smooth'
+    async login() {
+      try {
+        const response = await axios.post('http://localhost:8080/api/auth/login', this.loginData, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
+        console.log(response); // Imprime la respuesta para depuración
+        if (response.data && response.data.data && response.data.data.token) {
+          const token = response.data.data.token;
+          localStorage.setItem('token', token);
+          this.showToast('Login successful', 'success');
+          this.resetLoginFields();
+          this.fetchUserInfo(); // Obtener información del usuario después del login
+          this.$router.push('/mainView'); // Navega a mainView después del login
+        } else {
+          this.showToast('Unexpected response structure', 'error');
+        }
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+    async fetchUserInfo() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          return; // Si no hay token almacenado, no hace la solicitud
+        }
+        const response = await axios.get('http://localhost:8080/api/user/whoami', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log('User Info:', response.data); // Imprime la información del usuario en la consola
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    },
+    async register() {
+      try {
+        const response = await axios.post('http://localhost:8080/api/auth/register', this.registerData, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log(response); // Imprime la respuesta para depuración
+        if (response.data && response.data.message) {
+          this.showToast('Registration successful', 'success');
+          this.resetRegisterFields();
+        } else {
+          this.showToast('Unexpected response structure', 'error');
+        }
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+    resetLoginFields() {
+      this.loginData.identifier = '';
+      this.loginData.password = '';
+    },
+    resetRegisterFields() {
+      this.registerData.username = '';
+      this.registerData.email = '';
+      this.registerData.password = '';
+    },
+    showToast(message, type) {
+      // Implementa tu lógica de toast aquí
+      alert(`${type.toUpperCase()}: ${message}`);
+    },
+    handleError(error) {
+      console.error('API Error:', error); // Imprime el error para depuración
+      if (error.response && error.response.data && error.response.data.message) {
+        this.showToast(error.response.data.message, 'error');
+      } else {
+        this.showToast('An error occurred', 'error');
       }
     }
   }
 }
 </script>
+
+
+
+
 
 <style scoped>
 @import url('../styles.css');
@@ -163,24 +219,6 @@ export default {
   color: var(--title-color);
 }
 
-.info{
-  background-color: #FAFAFA;
-  font-family: var(--primary-font);
-  font-size: 25px;
-  color: var(--title-color);
-  padding-top: 90px;
-  padding-bottom: 130px;
-  
-}
-
-.benefits{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  margin-top: 30px;
-  flex-wrap: wrap;
-}
-
 .cards{
   background-color: white;
   border-radius: 20px;
@@ -206,17 +244,6 @@ export default {
   width: 200px;
 }
 
-footer{
-  background-color: #3B3838;
-  color: white;
-  height: 50px;
-  font-size: 15px;
-  display: flex; 
-  align-items: center;
-  text-align: start;
-  padding-left: 40px;
-}
-
 label {
   display: block;
   margin-bottom: 10px;
@@ -226,7 +253,7 @@ label {
   text-align: left;
 }
 
-input[type="text"] {
+input[type="text"],input[type="password"]{
   width: 100%;
   padding: 10px;
   margin-bottom: 20px;

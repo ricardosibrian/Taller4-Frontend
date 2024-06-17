@@ -5,7 +5,7 @@
       <h3>Solicitar una cita</h3>
       <form @submit.prevent="confirmAddMember">
         <label for="detalle">Detalle el motivo de su cita:</label>
-        <input type="text" v-model="newMemberEmail" id="detalle" required />
+        <input type="text" v-model="reason" id="detalle" required />
         <div class="modal-actions">
           <button type="button" @click="closeModal">Cancelar</button>
           <button type="submit">Crear cita</button>
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'SolicitarCitaModal',
   props: {
@@ -26,21 +28,44 @@ export default {
   },
   data() {
     return {
-      newMemberEmail: ''
+      reason: ''
     };
   },
   methods: {
     closeModal() {
       this.$emit('close');
     },
-    confirmAddMember() {
-      this.$emit('add-member', this.newMemberEmail);
-      this.newMemberEmail = '';
-      this.closeModal();
+    async confirmAddMember() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
+        
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        };
+        
+        const requestData = {
+          reason: this.reason
+        };
+        
+        const response = await axios.post('http://localhost:8080/api/appointment/request', requestData, { headers });
+        
+        alert('Cita creada exitosamente'); // Mostrar mensaje de éxito al usuario
+        
+        this.reason = ''; // Resetear el motivo después de enviar la solicitud
+        this.closeModal(); // Cerrar el modal después de completar la solicitud
+      } catch (error) {
+        console.error('Error al crear la cita:', error);
+        alert('Error al crear la cita'); // Mostrar mensaje de error al usuario en caso de error
+      }
     }
   }
 }
 </script>
+
 
 <style scoped>
 .modal-container {

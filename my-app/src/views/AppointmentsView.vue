@@ -1,13 +1,10 @@
 <template>
   <div class="main-admin-house">
-    <div class="main-card">
-      <h2>Solicitudes de citas</h2>
-      <MyCitasTable 
+    <MyCitasTable 
         :appointments="appointments" 
         @show-add-appointment-modal="showModal"
         @cancel-appointment="handleCancelAppointment"
       />
-    </div>
     <SolicitarCitaModal 
       :visible="isModalVisible" 
       @close="hideModal" 
@@ -81,15 +78,7 @@ export default {
   padding: 20px;
 }
 
-.main-card {
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-
 .table-container {
-  margin-top: 20px;
   overflow-x: auto;
 }
 

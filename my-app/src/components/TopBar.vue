@@ -1,10 +1,8 @@
 <template>
   <div class="topbar">
     <div class="user">
-      <img src="../assets/google-user.png" class="user-img">
       <div class="user-info">
-        <p class="email-info">ricardo.sibrian@gmail.com</p>
-        <p class="role-info">Residente encargado</p>
+        <p class="email-info"></p>
       </div>
     </div>
     <button class="hamburger" @click="toggleSidebar">☰</button>
@@ -14,13 +12,21 @@
 <script>
 export default {
   name: 'TopBar',
-  data() {
-    return {
-      topBarWidth: '84%' // Ancho inicial del topbar
-    };
+  props: {
+    userEmail: {
+      type: String,
+      default: ''
+    }
+  },
+  methods: {
+    toggleSidebar() {
+      // Implementa la lógica para alternar la barra lateral aquí
+    }
   }
 };
 </script>
+
+
 
 <style scoped>
 /* Estilos del topbar */
