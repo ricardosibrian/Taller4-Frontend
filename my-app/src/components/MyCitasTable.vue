@@ -2,7 +2,7 @@
   <div class="table-container">
     <div class="table-header">
       <h3>Mis citas</h3>
-      <button class="add-button" @click="$emit('show-add-appointment-modal')">
+      <button class="add-button" @click="showAddAppointmentModal = true">
         Solicitar cita
       </button>
     </div>
@@ -11,16 +11,18 @@
         <thead>
           <tr>
             <th>Fecha de solicitud</th>
-            <th>Estado</th>
             <th>Razón</th>
+            <th>Estado</th>
+            <th>Fecha/Hora a realizar</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(appointment, index) in appointments" :key="index">
-            <td>{{ appointment.requestDate }}</td>
-            <td>{{ appointment.status }}</td>
-            <td>{{ appointment.reason }}</td>
+            <td>{{ appointment.requestedDate }}</td>
+            <td>{{ appointment.appointmentReason }}</td>
+            <td>{{ appointment.appointmentState }}</td>
+            <td>{{ appointment.realizationDate ? appointment.realizationDate : 'Aún no definido' }}</td>
             <td>
               <button class="delete-button" @click="$emit('cancel-appointment', index)">Cancelar</button>
             </td>
@@ -28,19 +30,49 @@
         </tbody>
       </table>
     </div>
+    <SolicitarCitaModal :visible="showAddAppointmentModal" @close="showAddAppointmentModal = false" @appointment-created="fetchAppointments" />
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import SolicitarCitaModal from './SolicitarCitaModal.vue';
+
 export default {
   name: 'MyCitasTable',
-  props: {
-    appointments: {
-      type: Array,
-      required: true
+  components: {
+    SolicitarCitaModal
+  },
+  data() {
+    return {
+      appointments: [],
+      showAddAppointmentModal: false
+    };
+  },
+  created() {
+    this.fetchAppointments();
+  },
+  methods: {
+    async fetchAppointments() {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axios.get('http://localhost:8080/api/appointment/own', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        this.appointments = response.data.data.appointments.map(appointment => ({
+          requestedDate: appointment.requestedDate,
+          appointmentReason: appointment.appointmentReason,
+          appointmentState: appointment.appointmentState,
+          realizationDate: appointment.realizationDate ? appointment.realizationDate : 'Aún no definido'
+        }));
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
     }
   }
-}
+};
 </script>
 
 <style scoped>

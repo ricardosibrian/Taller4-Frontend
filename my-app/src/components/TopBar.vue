@@ -2,7 +2,7 @@
   <div class="topbar">
     <div class="user">
       <div class="user-info">
-        <p class="email-info"></p>
+        <p class="email-info">{{ userEmail }}</p>
       </div>
     </div>
     <button class="hamburger" @click="toggleSidebar">☰</button>
@@ -10,21 +10,50 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'TopBar',
-  props: {
-    userEmail: {
-      type: String,
-      default: ''
-    }
+  data() {
+    return {
+      userEmail: ''
+    };
   },
   methods: {
+    async fetchUserInfo() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          return; 
+        }
+        const response = await axios.get('http://localhost:8080/api/user/whoami', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const userEmail = response.data.data.userEmail;
+        localStorage.setItem('userEmail', userEmail);
+        console.log('User Email from API:', userEmail);
+        this.userEmail = userEmail; // Actualizar el dato local del componente
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    },
     toggleSidebar() {
-      // Implementa la lógica para alternar la barra lateral aquí
+      // Implementar la lógica para alternar la barra lateral aquí
     }
+  },
+  mounted() {
+    console.log('TopBar mounted');
+    this.fetchUserInfo(); // Obtener el correo electrónico al montar el componente
   }
 };
 </script>
+
+
+
+
+
 
 
 

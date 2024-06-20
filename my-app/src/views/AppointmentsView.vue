@@ -24,26 +24,6 @@ export default {
   },
   data() {
     return {
-      appointments: [
-        {
-          name: 'Juan Pérez',
-          requestDate: '2024-06-01',
-          status: 'Pendiente',
-          reason: 'Chequeo general'
-        },
-        {
-          name: 'María González',
-          requestDate: '2024-06-05',
-          status: 'Confirmada',
-          reason: 'Consulta dermatológica'
-        },
-        {
-          name: 'Carlos López',
-          requestDate: '2024-06-10',
-          status: 'Cancelada',
-          reason: 'Consulta cardiológica'
-        }
-      ],
       isModalVisible: false
     };
   },
@@ -53,16 +33,6 @@ export default {
     },
     hideModal() {
       this.isModalVisible = false;
-    },
-    handleAddAppointment(newMemberEmail) {
-      const newAppointment = {
-        name: 'Nuevo Paciente',
-        requestDate: new Date().toISOString().split('T')[0],
-        status: 'Pendiente',
-        reason: newMemberEmail
-      };
-      this.appointments.push(newAppointment);
-      this.hideModal();
     },
     handleCancelAppointment(index) {
       this.appointments.splice(index, 1);

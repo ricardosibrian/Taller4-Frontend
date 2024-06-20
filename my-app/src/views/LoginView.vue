@@ -53,33 +53,18 @@ export default {
         });
         console.log(response); 
         if (response.data && response.data.data && response.data.data.token) {
-          const token = response.data.data.token;
-          localStorage.setItem('token', token);
-          this.showToast('Login successful', 'success');
-          this.resetLoginFields();
-          this.fetchUserInfo(); 
-          this.$router.push('/mainView'); 
-        } else {
-          this.showToast('Unexpected response structure', 'error');
-        }
+        const token = response.data.data.token;
+        localStorage.setItem('token', token);
+        // Guardar también el correo electrónico
+        
+        this.showToast('Login successful', 'success');
+        this.resetLoginFields();
+        this.$router.push('/mainView');
+      } else {
+        this.showToast('Unexpected response structure', 'error');
+      }
       } catch (error) {
         this.handleError(error);
-      }
-    },
-    async fetchUserInfo() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          return; 
-        }
-        const response = await axios.get('http://localhost:8080/api/user/whoami', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        console.log('User Info:', response.data); 
-      } catch (error) {
-        console.error('Error fetching user info:', error);
       }
     },
     async register() {

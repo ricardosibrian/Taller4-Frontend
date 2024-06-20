@@ -57,6 +57,8 @@ export default {
         
         this.reason = ''; // Resetear el motivo después de enviar la solicitud
         this.closeModal(); // Cerrar el modal después de completar la solicitud
+        
+        this.$emit('appointment-created'); // Emitir evento para indicar que se creó una cita
       } catch (error) {
         console.error('Error al crear la cita:', error);
         alert('Error al crear la cita'); // Mostrar mensaje de error al usuario en caso de error
@@ -65,6 +67,7 @@ export default {
   }
 }
 </script>
+
 
 
 <style scoped>
