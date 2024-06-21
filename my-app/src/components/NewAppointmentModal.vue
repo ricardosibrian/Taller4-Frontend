@@ -2,28 +2,35 @@
   <div class="modal-container" v-if="visible">
     <div class="modal-content">
       <button class="close-button" @click="closeModal">✕</button>
-      <h3>Crear una nueva cita</h3>
-      <form class="form-appointment" @submit.prevent="confirmAddAppointment">
-        <label for="email">Tiempo estimado:</label>
-        <input type="text" v-model="patientEmail" id="email" required />
+      <h3>Aprobar Cita</h3>
+      <p class="small-text">Appointment ID: {{ appointmentId }}</p>
 
+      <form class="form-appointment" @submit.prevent="approveAppointment">
         <div class="form-group">
           <label for="appointmentDateTime">Fecha y hora de cita:</label>
           <input type="datetime-local" v-model="appointmentDateTime" id="appointmentDateTime" required />
         </div>
 
         <div class="form-group">
-          <label>Cantidad de doctores:</label>
-          <select v-model="doctorCount" @change="updateDoctors">
+          <label for="minutesAppointment">Tiempo estimado (minutos):</label>
+          <input type="number" v-model="minutesAppointment" id="minutesAppointment" required />
+        </div>
+
+        <!-- Selección de cantidad de doctores -->
+        <div class="form-group">
+          <label for="doctorCount">Cantidad de doctores:</label>
+          <select v-model="doctorCount" id="doctorCount" @change="updateDoctors" required>
             <option v-for="option in doctorOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </select>
         </div>
 
-        <!-- Dinámico: campos para nombre de doctor y especialidad -->
+        <!-- Campos dinámicos para nombres de doctores y especialidades -->
         <div v-for="(doctor, index) in doctors" :key="index" class="doctor-fields">
           <div class="form-group">
             <label :for="'doctorName' + index">Nombre del doctor {{ index + 1 }}:</label>
-            <input type="text" v-model="doctor.name" :id="'doctorName' + index" required />
+            <select v-model="doctor.name" :id="'doctorName' + index" required>
+              <option v-for="doctorName in doctorNames" :key="doctorName" :value="doctorName">{{ doctorName }}</option>
+            </select>
           </div>
           <div class="form-group">
             <label :for="'doctorSpecialty' + index">Especialidad:</label>
@@ -43,20 +50,26 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'AddAppointmentModal',
+  name: 'NewAppointmentModal',
   props: {
     visible: {
       type: Boolean,
       default: false
+    },
+    appointmentId: {
+      type: Number,
+      required: true
     }
   },
   data() {
     return {
-      patientEmail: '',
       appointmentDateTime: '',
+      minutesAppointment: '',
       doctorCount: 1,
-      doctors: [{ name: '', specialty: '' }],
+      doctors: [],
       doctorOptions: [
         { label: '1', value: 1 },
         { label: '2', value: 2 },
@@ -64,32 +77,86 @@ export default {
         { label: '4', value: 4 },
         { label: '5', value: 5 }
       ],
-      specialties: ['Cardiología', 'Neurología', 'Pediatría', 'Oftalmología', 'Dermatología']
+      specialties: ['CARDIOLOGY', 'DERMATOLOGY', 'ENDOCRINOLOGY', 'GASTROENTEROLOGY', 'GYNECOLOGY', 'HEMATOLOGY', 'NEUROLOGY', 'ONCOLOGY', 'OPHTHALMOLOGY', 'OTORHINOLARYNGOLOGY', 'PEDIATRICS', 'PSYCHIATRY', 'PULMONOLOGY', 'RHEUMATOLOGY', 'TRAUMATOLOGY', 'UROLOGY', 'GENERAL'],
+      doctorNames: []
     };
   },
   methods: {
     closeModal() {
       this.$emit('close');
     },
-    confirmAddAppointment() {
+    async approveAppointment() {
+      const token = localStorage.getItem('token');
+
+      // Formatear la fecha y hora en el formato requerido ("YYYY-MM-DD HH:mm:ss")
+      const formattedDateTime = this.appointmentDateTime.replace('T', ' ').substring(0, 16) + ':00';
+
+      // Preparar los datos para enviar
       const newAppointmentData = {
-        patientEmail: this.patientEmail,
-        appointmentDateTime: this.appointmentDateTime,
-        doctors: this.doctors
+        state: "Accepted",
+        appointmentDate: formattedDateTime,
+        minutesAppointment: this.minutesAppointment,
+        doctorEmail: [],
+        speciality: []
       };
-      this.$emit('add-appointment', newAppointmentData);
-      this.patientEmail = '';
-      this.appointmentDateTime = '';
-      this.doctors = [{ name: '', specialty: '' }];
-      this.closeModal();
+
+      // Llenar los arrays doctorEmail y speciality con los datos de los doctores seleccionados
+      this.doctors.forEach(doctor => {
+        if (doctor.name && doctor.specialty) {
+          newAppointmentData.doctorEmail.push(doctor.name);
+          newAppointmentData.speciality.push(doctor.specialty);
+        }
+      });
+
+      // Imprimir la fecha y hora en consola
+      console.log('Fecha y hora de cita enviada:', newAppointmentData.appointmentDate);
+
+      try {
+        // Realizar la petición POST para aprobar la cita
+        const response = await axios.post(`http://localhost:8080/api/appointment/approve/${this.appointmentId}`, newAppointmentData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Manejar la respuesta de éxito
+        console.log('Cita aprobada exitosamente:', response.data);
+        alert('¡La cita ha sido creada exitosamente!');
+        this.$emit('appointment-approved');
+      } catch (error) {
+        // Manejar errores de la petición
+        console.error('Error al crear la cita:', error);
+        alert('¡Hubo un error al crear la cita! Por favor, intenta de nuevo.');
+      }
     },
     updateDoctors() {
       const count = parseInt(this.doctorCount);
       this.doctors = Array.from({ length: count }, () => ({ name: '', specialty: '' }));
+    },
+    fetchDoctors() {
+      const token = localStorage.getItem('token');
+      axios.get('http://localhost:8080/api/user/allDoctors', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (response.data && response.data.data) {
+          this.doctorNames = response.data.data;
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching doctors:', error);
+      });
     }
+  },
+  mounted() {
+    this.fetchDoctors();
   }
 }
 </script>
+
 
 <style scoped>
 .modal-container {
@@ -113,10 +180,11 @@ export default {
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   width: 400px;
   position: relative;
+  overflow-y: auto;
 }
 
 .form-appointment {
-  overflow-y: auto;
+  
   max-height: 400px;
   padding: 5px;
 }
@@ -150,7 +218,7 @@ label {
 input[type="email"], input[type="datetime-local"], input[type="text"] {
   width: 100%;
   padding: 10px;
-  margin-bottom: 20px;
+  
   border: 1px solid #dcdcdc;
   border-radius: 5px;
   color: var(--title-color);
@@ -159,8 +227,8 @@ input[type="email"], input[type="datetime-local"], input[type="text"] {
   border-color: var(--title-color);
 }
 
-input[type="datetime-local"] {
-  margin-bottom: 0px;
+.date {
+  margin-top: 20px;
 }
 
 input:focus {
@@ -259,5 +327,6 @@ select:focus {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
 </style>
 

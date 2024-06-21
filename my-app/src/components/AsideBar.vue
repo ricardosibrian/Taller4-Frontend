@@ -27,11 +27,17 @@
             <p class="item-link">Nuevo historial</p>
           </div>
         </router-link>
+        <router-link v-if="hasDoctorRole" to="/mainView/prescriptionsView">
+          <div class="item-container admin-icon" :class="{ 'active-hover': $route.path === '/mainView/prescriptionsView' }">
+            <p class="item-link">Prescripciones</p>
+          </div>
+        </router-link>
         <router-link v-if="hasDoctorRole" to="/mainView/adminView">
-          <div class="item-container admin-icon" :class="{ 'active-hover': $route.path === '/mainView/adminView' || $route.path === '/mainView/adminHouseView' || $route.path === '/mainView/adminScanerView' || $route.path === '/mainView/adminVigilantView' || $route.path === '/mainView/adminHouseDetailView' }">
+          <div class="item-container admin-icon" :class="{ 'active-hover': $route.path === '/mainView/adminView' }">
             <p class="item-link">Administrar</p>
           </div>
         </router-link>
+        
       </div>
     </div>
     <router-link to="/" @click.native="logout">

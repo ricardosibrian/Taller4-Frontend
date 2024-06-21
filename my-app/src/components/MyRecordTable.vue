@@ -5,22 +5,30 @@
     </div>
     <div class="date-filter">
       <label for="startDate">Fecha Inicio:</label>
-      <input type="date" id="startDate" v-model="startDate" @change="filterAppointments" />
+      <input type="date" id="startDate" v-model="startDate" />
       <label for="endDate">Fecha Fin:</label>
-      <input type="date" id="endDate" v-model="endDate" @change="filterAppointments" />
+      <input type="date" id="endDate" v-model="endDate" />
+      <button class="filter-button" @click="applyFilter">
+        Aplicar filtro
+      </button>
     </div>
+    
     <div class="table-wrapper">
       <table class="table">
         <thead>
           <tr>
-            <th>Fecha</th>
             <th>Razón</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(appointment, index) in filteredAppointments" :key="index">
-            <td>{{ appointment.requestDate }}</td>
-            <td>{{ appointment.reason }}</td>
+          <tr v-for="(record, index) in records" :key="index">
+            <td>{{ record }}</td>
+          </tr>
+          <tr v-if="loading">
+            <td colspan="1" class="text-center">Cargando...</td>
+          </tr>
+          <tr v-if="error">
+            <td colspan="1" class="text-center">{{ errorMessage }}</td>
           </tr>
         </tbody>
       </table>
@@ -29,37 +37,86 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'MyCitasTable',
-  props: {
-    appointments: {
-      type: Array,
-      required: true
-    }
-  },
   data() {
     return {
       startDate: '',
       endDate: '',
-      filteredAppointments: this.appointments
+      records: [],
+      loading: false,
+      error: false,
+      errorMessage: ''
     };
   },
   methods: {
-    filterAppointments() {
+    fetchRecords(params = {}) {
+      const token = localStorage.getItem('token');
+      const url = 'http://localhost:8080/api/user/record';
+
+      this.loading = true;
+      this.error = false;
+
+      axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: params // Agregar parámetros opcionales
+      })
+      .then(response => {
+        this.loading = false;
+        if (response.data && response.data.data && response.data.data.histories) {
+          this.records = response.data.data.histories;
+        } else {
+          console.error('Respuesta de API inesperada:', response);
+          this.error = true;
+          this.errorMessage = 'Respuesta de API inesperada';
+        }
+      })
+      .catch(error => {
+        this.loading = false;
+        console.error('Error al obtener el historial médico:', error);
+        if (error.response && error.response.status === 404) {
+          this.records = [];
+          this.error = true;
+          this.errorMessage = 'No hay registros disponibles para el filtro seleccionado.';
+        } else {
+          this.error = true;
+          this.errorMessage = 'Error al obtener el historial médico.';
+        }
+      });
+    },
+    applyFilter() {
       if (this.startDate && this.endDate) {
-        this.filteredAppointments = this.appointments.filter(appointment => {
-          const appointmentDate = new Date(appointment.requestDate);
-          return appointmentDate >= new Date(this.startDate) && appointmentDate <= new Date(this.endDate);
-        });
+        // Ambas fechas están definidas, aplicar filtro con parámetros
+        const startDateFormatted = this.formatDate(this.startDate);
+        const endDateFormatted = this.formatDate(this.endDate);
+        
+        if (startDateFormatted && endDateFormatted) {
+          this.fetchRecords({
+            startDate: startDateFormatted,
+            endDate: endDateFormatted
+          });
+        } else {
+          alert('Error en el formato de las fechas');
+        }
+      } else if (!this.startDate && !this.endDate) {
+        // Ambas fechas están vacías, obtener registros sin filtros
+        this.fetchRecords();
       } else {
-        this.filteredAppointments = this.appointments;
+        // Una de las fechas está vacía, mostrar mensaje de alerta
+        alert('Filtros incompletos. Debes seleccionar ambas fechas o ninguna.');
       }
+    },
+    formatDate(date) {
+      const [year, month, day] = date.split('-');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
   },
-  watch: {
-    appointments(newAppointments) {
-      this.filteredAppointments = newAppointments;
-    }
+  mounted() {
+    this.fetchRecords();
   }
 }
 </script>
@@ -101,7 +158,7 @@ export default {
   margin-right: 20px;
 }
 
-.add-button {
+.filter-button {
   background-color: var(--primary-color);
   color: white;
   font-size: 14px;
@@ -113,10 +170,6 @@ export default {
   font-weight: 600;
   display: flex;
   align-items: center;
-}
-
-.add-button:hover {
-  background-color: #1d3a94;
 }
 
 .table {
@@ -164,6 +217,24 @@ export default {
 
 .date-filter{
   font-size: 15px;
+}
+
+.add-button {
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 14px;
+  font-family: var(--primary-font);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.add-button:hover {
+  background-color: #1d3a94;
 }
 </style>
 

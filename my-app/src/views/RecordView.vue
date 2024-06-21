@@ -15,25 +15,6 @@ export default {
   components: {
     MyRecordTable
   },
-  data() {
-    return {
-      appointments: [
-        {
-          requestDate: '2024-06-01',
-          reason: 'Chequeo general'
-        },
-        {
-          requestDate: '2024-06-05',
-          reason: 'Consulta dermatológica'
-        },
-        {
-          requestDate: '2024-06-10',
-          reason: 'Consulta cardiológica'
-        }
-      ],
-      isModalVisible: false
-    };
-  },
   methods: {
     showModal() {
       this.isModalVisible = true;

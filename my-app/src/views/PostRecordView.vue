@@ -3,10 +3,10 @@
     <div class="add-vigilant">
       <h2>Agregar registro al historial médico del paciente</h2>
       <form @submit.prevent="addRecord">
-        <label for="text">Correo eléctrónico del paciente</label>
-        <input type="text" id="motivo" v-model="newVigilantEmail" placeholder="Ingresar el correo electrónico del paciente" required />
-        <label for="text">Control médico</label>
-        <input type="text" id="motivo" v-model="newVigilantEmail" placeholder="Ingresar motivo de entrada" required />
+        <label for="email">Correo electrónico del paciente</label>
+        <input type="email" id="email" v-model="patientEmail" placeholder="Ingresar el correo electrónico del paciente" required />
+        <label for="reason">Control médico</label>
+        <input type="text" id="reason" v-model="reason" placeholder="Ingresar motivo de entrada" required />
         <button type="submit">Agregar al historial</button>
       </form>
     </div>
@@ -14,9 +14,42 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
-  name: 'CreateEntryView'
+  name: 'PostRecordView',
+  data() {
+    return {
+      patientEmail: '',
+      reason: ''
+    };
+  },
+  methods: {
+    addRecord() {
+      const token = localStorage.getItem('token');
+      const requestData = {
+        reason: this.reason,
+        patient: this.patientEmail
+      };
+
+      axios.post('http://localhost:8080/api/user/record', requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        alert('Registro agregado al historial con éxito');
+        // Limpiar los campos del formulario
+        this.patientEmail = '';
+        this.reason = '';
+      })
+      .catch(error => {
+        alert('Error al agregar registro al historial');
+        console.error('Error:', error);
+      });
+    }
+  }
 };
 </script>
 

@@ -3,14 +3,29 @@
     <div class="modal-content">
       <button class="close-button" @click="closeModal">✕</button>
       <h3>Prescripción médica</h3>
-      <form @submit.prevent="submitPrescripcion">
-        <label for="medicamento">Medicamento:</label>
-        <input type="text" v-model="medicamento" id="medicamento" required />
-        <label for="dosis">Dosis:</label>
-        <input type="text" v-model="dosis" id="dosis" required />
+      <p>ID de la cita: {{ appointmentId }}</p> <!-- Muestra el appointmentId -->
+      <form class="form-prescription" @submit.prevent="submitPrescripcion">
+        <div class="form-group">
+          <label for="numPrescripciones">Cantidad de prescripciones:</label>
+          <select v-model="numPrescripciones" @change="updatePrescripciones">
+            <option v-for="n in prescripcionOptions" :key="n.value" :value="n.value">{{ n.label }}</option>
+          </select>
+        </div>
+        
+        <div v-for="(prescripcion, index) in prescripciones.slice(0, numPrescripciones)" :key="index" class="prescripcion-fields">
+          <div class="form-group">
+            <label :for="'medicamento-' + index">Medicamento {{ index + 1 }}:</label>
+            <input type="text" v-model="prescripcion.medicamento" :id="'medicamento-' + index" required />
+          </div>
+          <div class="form-group">
+            <label :for="'dosis-' + index">Dosis:</label>
+            <input type="text" v-model="prescripcion.dosis" :id="'dosis-' + index" required />
+          </div>
+        </div>
+        
         <div class="modal-actions">
           <button type="button" @click="closeModal">Cancelar</button>
-          <button type="submit">Guardar</button>
+          <button type="submit">Agregar</button>
         </div>
       </form>
     </div>
@@ -18,18 +33,32 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'PrescripcionModal',
   props: {
     visible: {
       type: Boolean,
       default: false
+    },
+    appointmentId: {
+      type: String, // Cambia el tipo a String
+      required: true
     }
   },
   data() {
     return {
-      medicamento: '',
-      dosis: ''
+      numPrescripciones: 1,
+      prescripciones: Array.from({ length: 5 }, () => ({ medicamento: '', dosis: '' })),
+      prescripcionOptions: [
+        { label: '1', value: 1 },
+        { label: '2', value: 2 },
+        { label: '3', value: 3 },
+        { label: '4', value: 4 },
+        { label: '5', value: 5 }
+      ],
+      defaultEndDate: '2024-06-20' // Fecha de fin por defecto
     };
   },
   methods: {
@@ -37,11 +66,43 @@ export default {
       this.$emit('close');
     },
     submitPrescripcion() {
-        //TODO: Implementar lógica para enviar la prescripción al servidor
+      const token = localStorage.getItem('token');
+      const prescripcionesValidas = this.prescripciones.slice(0, this.numPrescripciones).map(prescripcion => ({
+        medicine: prescripcion.medicamento,
+        dose: prescripcion.dosis,
+        endDate: this.defaultEndDate // Establece la fecha de fin por defecto
+      }));
+
+      const data = {
+        appointmentId: this.appointmentId,
+        prescriptions: prescripcionesValidas
+      };
+
+      axios.post('http://localhost:8080/api/clinic/prescriptions', data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        alert('Prescripción agregada con éxito');
+        this.closeModal();
+      })
+      .catch(error => {
+        console.error('Error al agregar la prescripción:', error);
+        alert('Error al agregar la prescripción');
+      });
+    },
+    updatePrescripciones() {
+      // Ajustar el tamaño del array de prescripciones si es necesario
+      if (this.prescripciones.length < this.numPrescripciones) {
+        this.prescripciones.push(...Array.from({ length: this.numPrescripciones - this.prescripciones.length }, () => ({ medicamento: '', dosis: '' })));
+      }
     }
   }
 };
 </script>
+
+
 
 <style scoped>
 .modal-container {
@@ -61,9 +122,17 @@ export default {
   background: #ffffff;
   padding: 30px;
   border-radius: 10px;
+  max-height: 500px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   width: 400px;
   position: relative;
+  overflow-y: auto;
+}
+
+.form-prescription {
+  
+  max-height: 400px;
+  padding: 5px;
 }
 
 .close-button {
@@ -86,14 +155,13 @@ export default {
 
 label {
   display: block;
-  margin-bottom: 10px;
   font-size: 14px;
   color: var(--title-color);
   font-family: var(--primary-font);
   text-align: left;
 }
 
-input[type="text"] {
+input[type="text"], select {
   width: 100%;
   padding: 10px;
   margin-bottom: 20px;
@@ -105,7 +173,7 @@ input[type="text"] {
   border-color: var(--title-color);
 }
 
-input:focus {
+input:focus, select:focus {
   outline-color: var(--primary-color);
 }
 
@@ -144,5 +212,21 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background-color: #1d3a94;
+}
+
+.prescripcion-fields label {
+  display: block;
+  font-size: 14px;
+  color: var(--title-color);
+  font-family: var(--primary-font);
+  text-align: left;
+}
+
+.prescripcion-fields input, .prescripcion-fields select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 </style>

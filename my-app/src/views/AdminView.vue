@@ -1,131 +1,173 @@
 <template>
-  <div class="main-admin-roles">
-    <div class="main-card">
-      <h2>Administrar Roles</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Rol</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in users" :key="user.id">
-              <td>{{ user.nombre }}</td>
-              <td>
-                <select v-model="user.rol">
-                  <option v-for="rol in roles" :key="rol" :value="rol">{{ rol }}</option>
-                </select>
-              </td>
-              <td>
-                <button @click="updateRole(user)" class="update-role">Actualizar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="main-admin-vigilant">
+    <div class="add-vigilant">
+      <h2>Administración de roles</h2>
+      <form @submit.prevent="addRecord">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" v-model="newVigilantEmail" placeholder="Ingresar el correo electrónico" required />
+        <label for="role">Agregar/Eliminar Rol</label>
+        <select id="role" v-model="selectedRole" required>
+          <option value="" disabled>Seleccionar Rol</option>
+          <option value="ASTN">Asistente</option>
+          <option value="DOCT">Doctor</option>
+        </select>
+        <button type="submit">Actualizar</button>
+      </form>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'AdminRolesView',
+  name: 'AdminView',
   data() {
     return {
-      users: [
-        { id: 1, nombre: 'Juan Pérez', rol: 'Admin' },
-        { id: 2, nombre: 'María López', rol: 'Usuario' },
-        { id: 3, nombre: 'Carlos Martínez', rol: 'Moderador' },
-      ],
-      roles: ['Admin', 'Usuario', 'Moderador'],
+      newVigilantEmail: '',
+      selectedRole: ''
     };
   },
   methods: {
-    updateRole(user) {
-      // Lógica para actualizar el rol del usuario
-      console.log(`Rol de ${user.nombre} actualizado a ${user.rol}`);
-    },
-  },
+    addRecord() {
+      const token = localStorage.getItem('token');
+      const requestData = {
+        role: this.selectedRole,
+        user: this.newVigilantEmail
+      };
+
+      axios.post('http://localhost:8080/api/config/user-role', requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        alert('Role changed successfully');
+        // Puedes agregar aquí lógica adicional, como limpiar los campos del formulario
+        this.newVigilantEmail = '';
+        this.selectedRole = '';
+      })
+      .catch(error => {
+        alert('Error changing role');
+        console.error('Error:', error);
+      });
+    }
+  }
 };
 </script>
 
 <style scoped>
 @import url('../styles.css');
 
-.main-admin-roles {
+.main-admin-vigilant {
   padding: 20px;
-}
-.main-card {
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
+  font-family: var(--primary-font);
+  align-items: center;
 }
 
-.table-container {
-  margin-top: 20px;
-  overflow-x: auto;
+.header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-h2 {
+.header h1 {
+  font-size: var(--title-size);
+  color: var(--title-color);
+}
+
+.add-vigilant {
+  background-color: var(--white-color);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  color: var(--title-color);
+  font-size: 14px;
+  font-family: var(--primary-font);
+  width: 75%;
+  
+}
+
+.add-vigilant h2 {
   color: var(--title-color);
   font-size: 18px;
   font-family: var(--primary-font);
+  margin-bottom: 25px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+.add-vigilant form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-thead {
-  background-color: #f4f4f4;
-}
-
-.table-container {
-  width: 100%;
-  border-collapse: collapse;
-  color: var(--title-color);
-  font-family: var(--primary-font);
-}
-
-.table-container th,
-.table-container td {
-  padding: 15px;
+.add-vigilant label {
+  margin-bottom: 5px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  font-weight: 600;
 }
 
-.table-container th {
-  background-color: #f9f9f9;
+.add-vigilant input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+input:focus {
+  outline-color: var(--primary-color);
+}
+
+.add-vigilant button {
+  background-color: var(--primary-color);
+  margin-top: 20px;
   font-size: 14px;
-}
-
-.table-container td {
-  font-size: 13px;
-}
-
-.update-role {
-  background-color: var(--bg-color);
-  color: var(--title-color);
-  padding: 5px 10px;
+  color: white;
+  font-family: var(--primary-font);
+  font-weight: 600;
+  padding: 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.update-role:hover {
-  background-color: #e0e1e5;
+.add-vigilant button:hover {
+  background-color: #1d3a94;
+}
+
+select, input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+option {
+  color: var(--title-color);
+  font-size: 14px;
+  font-family: var(--primary-font);
+  border-color: var(--title-color);
+}
+
+option:focus {
+  outline-color: var(--primary-color);
+  padding: 10px;
 }
 
 select {
-  padding: 5px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  color: var(--title-color);
+  font-size: 14px;
+  font-family: var(--primary-font);
+  border-color: var(--title-color);
 }
-</style>
 
+select:focus {
+  outline-color: var(--primary-color);
+}
+
+</style>

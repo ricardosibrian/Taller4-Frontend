@@ -2,6 +2,21 @@
   <div class="table-container">
     <div class="table-header">
       <h3>Mis citas</h3>
+      <div class="filter-container">
+        <label for="stateFilter">Filtrar por estado:</label>
+        <select id="stateFilter" v-model="selectedState">
+          <option value="">Todos</option>
+          <option value="PENDING_OF_APPROVAL">PENDING_OF_APPROVAL</option>
+          <option value="PENDING_OF_REALIZATION">PENDING_OF_REALIZATION</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="FINALIZED">FINALIZED</option>
+          <option value="REJECTED">REJECTED</option>
+          <option value="CANCELED">CANCELED</option>
+        </select>
+      </div>
+      <button class="add-button" @click="filterAppointments">
+        Filtrar
+      </button>
       <button class="add-button" @click="showAddAppointmentModal = true">
         Solicitar cita
       </button>
@@ -24,56 +39,84 @@
             <td>{{ appointment.appointmentState }}</td>
             <td>{{ appointment.realizationDate ? appointment.realizationDate : 'Aún no definido' }}</td>
             <td>
-              <button class="delete-button" @click="$emit('cancel-appointment', index)">Cancelar</button>
+              <button class="delete-button" @click="openPrescripcionesModal(appointment)">Prescripciones</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <SolicitarCitaModal :visible="showAddAppointmentModal" @close="showAddAppointmentModal = false" @appointment-created="fetchAppointments" />
+    <MisPrescripcionesModal :visible="showPrescripcionesModal" :appointment-id="selectedAppointmentId" @close="showPrescripcionesModal = false" />
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
 import SolicitarCitaModal from './SolicitarCitaModal.vue';
+import MisPrescripcionesModal from './MisPrescripcionesModal.vue';
 
 export default {
   name: 'MyCitasTable',
   components: {
-    SolicitarCitaModal
+    SolicitarCitaModal,
+    MisPrescripcionesModal
   },
   data() {
     return {
       appointments: [],
-      showAddAppointmentModal: false
+      showAddAppointmentModal: false,
+      showPrescripcionesModal: false,
+      selectedAppointmentId: null,
+      selectedState: '' // Estado seleccionado del filtro
     };
   },
   created() {
     this.fetchAppointments();
   },
   methods: {
-    async fetchAppointments() {
+    async fetchAppointments(state = '') {
       const token = localStorage.getItem('token');
+      let url = 'http://localhost:8080/api/appointment/own';
+
+      if (state) {
+        url += `?state=${state}`;
+      }
+
       try {
-        const response = await axios.get('http://localhost:8080/api/appointment/own', {
+        const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        this.appointments = response.data.data.appointments.map(appointment => ({
-          requestedDate: appointment.requestedDate,
-          appointmentReason: appointment.appointmentReason,
-          appointmentState: appointment.appointmentState,
-          realizationDate: appointment.realizationDate ? appointment.realizationDate : 'Aún no definido'
-        }));
+        console.log('Response from API:', response.data); // Agregado para inspeccionar la respuesta
+        // Verificar si response.data.data.appointments es un arreglo
+        if (Array.isArray(response.data.data.appointments)) {
+          this.appointments = response.data.data.appointments.map(appointment => ({
+            requestedDate: appointment.requestedDate,
+            appointmentReason: appointment.appointmentReason,
+            appointmentState: appointment.appointmentState,
+            realizationDate: appointment.realizationDate,
+            appointmentId: appointment.appointmentId // Asegúrate de incluir appointmentId
+          }));
+        } else {
+          console.error('Expected an array but got:', response.data.data.appointments);
+        }
       } catch (error) {
         console.error('Error fetching appointments:', error);
       }
+    },
+    filterAppointments() {
+      this.fetchAppointments(this.selectedState);
+    },
+    openPrescripcionesModal(appointment) {
+      this.selectedAppointmentId = appointment.appointmentId;
+      this.showPrescripcionesModal = true;
     }
   }
 };
 </script>
+
 
 <style scoped>
 @import url('../styles.css');
@@ -156,6 +199,25 @@ export default {
 
 .delete-button:hover {
   background-color: #e0e1e5;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+}
+
+.filter-container label {
+  margin-right: 10px;
+  font-size: 14px;
+  color: var(--title-color);
+}
+
+.filter-container select {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--title-color);
 }
 </style>
 
